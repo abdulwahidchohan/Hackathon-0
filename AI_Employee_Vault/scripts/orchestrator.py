@@ -62,7 +62,7 @@ class Orchestrator:
 
     def move_to_done(self, file_path: Path):
         """Archives the completed instruction."""
-        done_dir = self.vault_path / 'Archive' / datetime.now().strftime('%Y-%m')
+        done_dir = self.vault_path / 'Done' / datetime.now().strftime('%Y-%m')
         done_dir.mkdir(parents=True, exist_ok=True)
         try:
              shutil.move(str(file_path), str(done_dir / file_path.name))
