@@ -1,0 +1,177 @@
+version: '3.8'
+
+# Platinum Tier - Cloud Agent (24/7 Draft-Only Operations)
+# Runs on Oracle Cloud VM for always-on availability
+# Security: No secrets, read-only operations, drafts only
+
+services:
+  # Cloud AI Agent - Draft Generator
+  cloud-agent:
+    build:
+      context: ../../
+      dockerfile: docker/cloud/Dockerfile.cloud-agent
+    container_name: ai-employee-cloud-agent
+    restart: always
+    environment:
+      # Agent Identity
+      - AGENT_ID=cloud
+      - AGENT_ROLE=draft_generator
+      - NODE_ENV=production
+
+      # Vault Configuration (Read-mostly with draft creation)
+      - VAULT_PATH=/vault
+      - VAULT_SYNC_ENABLED=true
+      - VAULT_SYNC_INTERVAL=300000  # 5 minutes
+
+      # Work Zone (Draft-Only)
+      - ALLOWED_OPERATIONS=read,draft,create_approval_request
+      - FORBIDDEN_OPERATIONS=send_email,post_social,make_payment,send_whatsapp
+
+      # MCP Servers (Read-Only Ports)
+      - MCP_COMMUNICATION_PORT=3001
+      - MCP_BUSINESS_OPS_PORT=3002
+      - MCP_INTEGRATION_PORT=3004
+
+      # Monitoring
+      - HEALTH_CHECK_ENABLED=true
+      - HEALTH_CHECK_PORT=8080
+      - LOG_LEVEL=info
+
+      # Odoo Read-Only
+      - ODOO_URL=${ODOO_CLOUD_URL}
+      - ODOO_DB=${ODOO_DB}
+      - ODOO_API_KEY=${ODOO_READ_ONLY_KEY}  # Read-only API key
+
+      # Git Sync Configuration
+      - GIT_REMOTE=origin
+      - GIT_BRANCH=main
+      - GIT_AUTO_COMMIT=true
+      - GIT_AUTO_PUSH=true
+    volumes:
+      - vault-data:/vault
+      - ./cloud-config:/config:ro
+      - cloud-logs:/var/log/ai-employee
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - ai-employee-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Watcher Orchestrator - 24/7 Monitoring
+  watcher-orchestrator:
+    build:
+      context: ../../
+      dockerfile: docker/cloud/Dockerfile.watcher
+    container_name: ai-employee-watcher
+    restart: always
+    environment:
+      - AGENT_ID=cloud
+      - VAULT_PATH=/vault
+      - GMAIL_WATCHER_ENABLED=true
+      - GMAIL_CHECK_INTERVAL=300000  # 5 minutes
+      - BANK_WATCHER_ENABLED=false  # Local only
+      - WHATSAPP_WATCHER_ENABLED=false  # Local only
+      - FILE_DROP_WATCHER_ENABLED=true
+      # Gmail OAuth (read-only scope)
+      - GMAIL_CLIENT_ID=${GMAIL_CLIENT_ID}
+      - GMAIL_CLIENT_SECRET=${GMAIL_CLIENT_SECRET}
+      - GMAIL_REFRESH_TOKEN=${GMAIL_REFRESH_TOKEN_READ_ONLY}
+    volumes:
+      - vault-data:/vault
+      - cloud-logs:/var/log/watchers
+    networks:
+      - ai-employee-network
+    depends_on:
+      - cloud-agent
+    healthcheck:
+      test: ["CMD", "node", "scripts/watcher-health-check.js"]
+      interval: 120s
+      timeout: 15s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Vault Sync Service - Git-Based Synchronization
+  vault-sync:
+    build:
+      context: ../../
+      dockerfile: docker/cloud/Dockerfile.vault-sync
+    container_name: ai-employee-vault-sync
+    restart: always
+    environment:
+      - VAULT_PATH=/vault
+      - GIT_REMOTE=origin
+      - GIT_BRANCH=main
+      - SYNC_INTERVAL=300000  # 5 minutes
+      - AUTO_COMMIT=true
+      - AUTO_PUSH=true
+      - AUTO_PULL=true
+      - CONFLICT_STRATEGY=local-wins  # Local agent has priority
+      # Git credentials (deploy key)
+      - GIT_SSH_KEY_PATH=/secrets/deploy-key
+    volumes:
+      - vault-data:/vault
+      - ./deploy-key:/secrets/deploy-key:ro
+      - cloud-logs:/var/log/vault-sync
+    networks:
+      - ai-employee-network
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cd /vault && git status"]
+      interval: 300s
+      timeout: 30s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Health Monitor - System Monitoring
+  health-monitor:
+    build:
+      context: ../../
+      dockerfile: docker/cloud/Dockerfile.health-monitor
+    container_name: ai-employee-health-monitor
+    restart: always
+    environment:
+      - MONITOR_INTERVAL=60000  # 1 minute
+      - ALERT_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
+      - ALERT_EMAIL=${ADMIN_EMAIL}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - cloud-logs:/var/log/health-monitor
+    networks:
+      - ai-employee-network
+    ports:
+      - "8080:8080"  # Health dashboard
+    depends_on:
+      - cloud-agent
+      - watcher-orchestrator
+      - vault-sync
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  ai-employee-network:
+    driver: bridge
+
+volumes:
+  vault-data:
+    driver: local
+  cloud-logs:
+    driver: local

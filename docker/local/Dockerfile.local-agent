@@ -1,0 +1,50 @@
+# Platinum Tier - Local Agent Dockerfile
+# Full execution authority with all credentials
+
+FROM node:18-alpine
+
+# Install required packages
+RUN apk add --no-cache \
+    git \
+    bash \
+    curl \
+    python3 \
+    py3-pip \
+    openssh-client
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy application code
+COPY . .
+
+# Copy local-specific scripts
+COPY scripts/ /app/scripts/
+COPY commands/ /app/commands/
+
+# Create necessary directories
+RUN mkdir -p /vault /var/log/ai-employee
+
+# Set permissions
+RUN chmod +x /app/scripts/sync/*.js /app/commands/*.js
+
+# Expose health check port
+EXPOSE 8081
+
+# Set environment
+ENV NODE_ENV=production
+ENV AGENT_ID=local
+ENV AGENT_ROLE=executor
+
+# Health check
+HEALTHCHECK --interval=60s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8081/health || exit 1
+
+# Run local agent
+CMD ["node", "commands/local-agent.js"]

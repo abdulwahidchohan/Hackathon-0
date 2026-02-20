@@ -1,0 +1,64 @@
+{
+  "name": "gold-tier-ai-employee",
+  "version": "1.0.0",
+  "description": "Gold Tier Personal AI Employee - Autonomous business assistant with cross-domain integration",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node scripts/setup-gold-tier.bat",
+    "validate": "node scripts/validate-config.js",
+    "init-db": "node scripts/init-audit-db.js",
+    "audit:weekly": "node core_systems/weekly_audit_runner.js",
+    "audit:scheduler": "node core_systems/audit_scheduler.js",
+    "briefing:daily": "node core_systems/ceo_briefing_generator.js --period daily",
+    "briefing:weekly": "node core_systems/ceo_briefing_generator.js --period weekly",
+    "briefing:monthly": "node core_systems/ceo_briefing_generator.js --period monthly",
+    "briefing:quarterly": "node core_systems/ceo_briefing_generator.js --period quarterly",
+    "mcp:communication": "node mcp_servers/communication_mcp_server.js",
+    "mcp:business": "node mcp_servers/business_operations_mcp_server.js",
+    "mcp:personal": "node mcp_servers/personal_assistance_mcp_server.js",
+    "mcp:integration": "node mcp_servers/integration_mcp_server.js",
+    "mcp:all": "concurrently \"npm run mcp:communication\" \"npm run mcp:business\" \"npm run mcp:personal\" \"npm run mcp:integration\"",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "k8s:apply": "kubectl apply -f k8s/",
+    "k8s:delete": "kubectl delete -f k8s/",
+    "k8s:status": "kubectl get all -n gold-tier-ai-employee",
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:unit": "jest tests/unit --coverage",
+    "test:integration": "jest tests/integration",
+    "test:e2e": "jest tests/e2e",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "keywords": [
+    "ai",
+    "automation",
+    "mcp",
+    "audit",
+    "business-intelligence",
+    "cross-domain-integration"
+  ],
+  "author": "Gold Tier AI Employee System",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "node-cron": "^3.0.3",
+    "uuid": "^9.0.1",
+    "nodemailer": "^6.9.7",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.54.0",
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

@@ -1,0 +1,217 @@
+version: '3.8'
+
+# Platinum Tier - Local Agent (Approval & Execution Authority)
+# Runs on local machine with full credentials and execution capabilities
+# Security: All secrets stay local, approval authority for all sensitive actions
+
+services:
+  # Local AI Agent - Executor
+  local-agent:
+    build:
+      context: ../../
+      dockerfile: docker/local/Dockerfile.local-agent
+    container_name: ai-employee-local-agent
+    restart: unless-stopped
+    environment:
+      # Agent Identity
+      - AGENT_ID=local
+      - AGENT_ROLE=executor
+      - NODE_ENV=production
+
+      # Vault Configuration (Full Read-Write)
+      - VAULT_PATH=/vault
+      - VAULT_SYNC_ENABLED=true
+      - VAULT_SYNC_INTERVAL=300000  # 5 minutes
+
+      # Work Zone (Full Execution Authority)
+      - ALLOWED_OPERATIONS=all
+      - APPROVAL_AUTHORITY=true
+
+      # MCP Servers (Full Access)
+      - MCP_COMMUNICATION_PORT=3001
+      - MCP_BUSINESS_OPS_PORT=3002
+      - MCP_PERSONAL_PORT=3003
+      - MCP_INTEGRATION_PORT=3004
+      - MCP_ODOO_PORT=3005
+
+      # Email Credentials (SMTP)
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+
+      # LinkedIn Credentials
+      - LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
+      - LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
+      - LINKEDIN_MEMBER_ID=${LINKEDIN_MEMBER_ID}
+
+      # Twitter/X Credentials
+      - TWITTER_API_KEY=${TWITTER_API_KEY}
+      - TWITTER_API_SECRET=${TWITTER_API_SECRET}
+      - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
+
+      # Facebook Credentials
+      - FACEBOOK_ACCESS_TOKEN=${FACEBOOK_ACCESS_TOKEN}
+      - FACEBOOK_PAGE_ID=${FACEBOOK_PAGE_ID}
+
+      # Odoo Full Access
+      - ODOO_URL=${ODOO_URL}
+      - ODOO_DB=${ODOO_DB}
+      - ODOO_USERNAME=${ODOO_USERNAME}
+      - ODOO_PASSWORD=${ODOO_PASSWORD}
+
+      # WhatsApp (Local Session)
+      - WHATSAPP_ENABLED=true
+      - WHATSAPP_SESSION_PATH=/whatsapp-session
+
+      # Payment Processing (Sandbox for now)
+      - PAYMENT_GATEWAY=${PAYMENT_GATEWAY}
+      - PAYMENT_API_KEY=${PAYMENT_API_KEY}
+
+      # Monitoring
+      - HEALTH_CHECK_ENABLED=true
+      - HEALTH_CHECK_PORT=8081
+      - LOG_LEVEL=info
+
+      # Git Sync Configuration
+      - GIT_REMOTE=origin
+      - GIT_BRANCH=main
+      - GIT_AUTO_PULL=true
+      - GIT_AUTO_COMMIT=true
+      - GIT_AUTO_PUSH=true
+    volumes:
+      - ${VAULT_PATH}:/vault
+      - ./local-config:/config:ro
+      - ${VAULT_PATH}/whatsapp-session:/whatsapp-session
+      - local-logs:/var/log/ai-employee
+    networks:
+      - ai-employee-network
+    ports:
+      - "8081:8081"  # Health dashboard (local only)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Local Approval Monitor - Watches for Approved Items
+  approval-monitor:
+    build:
+      context: ../../
+      dockerfile: docker/local/Dockerfile.approval-monitor
+    container_name: ai-employee-approval-monitor
+    restart: unless-stopped
+    environment:
+      - AGENT_ID=local
+      - VAULT_PATH=/vault
+      - MONITOR_INTERVAL=30000  # 30 seconds
+      - NOTIFICATION_ENABLED=true
+    volumes:
+      - ${VAULT_PATH}:/vault
+      - local-logs:/var/log/approval-monitor
+    networks:
+      - ai-employee-network
+    depends_on:
+      - local-agent
+    healthcheck:
+      test: ["CMD", "node", "scripts/approval-monitor-health.js"]
+      interval: 120s
+      timeout: 15s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Local Vault Sync Service
+  vault-sync-local:
+    build:
+      context: ../../
+      dockerfile: docker/local/Dockerfile.vault-sync
+    container_name: ai-employee-vault-sync-local
+    restart: unless-stopped
+    environment:
+      - VAULT_PATH=/vault
+      - GIT_REMOTE=origin
+      - GIT_BRANCH=main
+      - SYNC_INTERVAL=300000  # 5 minutes
+      - AUTO_COMMIT=true
+      - AUTO_PUSH=true
+      - AUTO_PULL=true
+      - CONFLICT_STRATEGY=local-wins  # Local has priority
+      # Git credentials
+      - GIT_SSH_KEY_PATH=/secrets/deploy-key
+    volumes:
+      - ${VAULT_PATH}:/vault
+      - ./deploy-key:/secrets/deploy-key:ro
+      - local-logs:/var/log/vault-sync
+    networks:
+      - ai-employee-network
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cd /vault && git status"]
+      interval: 300s
+      timeout: 30s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Local MCP Servers (Full Capabilities)
+  mcp-servers:
+    build:
+      context: ../../
+      dockerfile: docker/local/Dockerfile.mcp-servers
+    container_name: ai-employee-mcp-servers
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      # All MCP server environment variables
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
+      - LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
+      - ODOO_URL=${ODOO_URL}
+      - ODOO_DB=${ODOO_DB}
+      - ODOO_USERNAME=${ODOO_USERNAME}
+      - ODOO_PASSWORD=${ODOO_PASSWORD}
+    volumes:
+      - ${VAULT_PATH}:/vault
+      - local-logs:/var/log/mcp-servers
+    networks:
+      - ai-employee-network
+    ports:
+      - "3001:3001"  # Communication MCP
+      - "3002:3002"  # Business Ops MCP
+      - "3003:3003"  # Personal MCP
+      - "3004:3004"  # Integration MCP
+      - "3005:3005"  # Odoo MCP
+    depends_on:
+      - local-agent
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  ai-employee-network:
+    driver: bridge
+
+volumes:
+  local-logs:
+    driver: local

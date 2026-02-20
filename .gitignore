@@ -7,3 +7,13 @@ AI_Employee_Vault/Logs/
 AI_Employee_Vault/Pending_Approval/
 AI_Employee_Vault/Approved/
 AI_Employee_Vault/Needs_Action/
+AI_Employee_Vault/Rejected/
+node_modules/
+.env.local
+.env.cloud
+.linkedin_token.json
+credentials.json
+whatsapp-session/
+*.key
+*.pem
+package-lock.json

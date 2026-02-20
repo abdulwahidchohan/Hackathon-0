@@ -1,0 +1,256 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gold-tier-ai-employee
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-config
+  namespace: gold-tier-ai-employee
+data:
+  NODE_ENV: "production"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: communication-mcp
+  template:
+    metadata:
+      labels:
+        app: communication-mcp
+    spec:
+      containers:
+      - name: communication-mcp
+        image: gold-tier-ai-employee/communication-mcp:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: MCP_SERVER_ID
+          value: "communication-mcp"
+        - name: MCP_SERVER_PORT
+          value: "3001"
+        envFrom:
+        - secretRef:
+            name: mcp-secrets
+        - configMapRef:
+            name: mcp-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: communication-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  selector:
+    app: communication-mcp
+  ports:
+  - protocol: TCP
+    port: 3001
+    targetPort: 3001
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: business-operations-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: business-operations-mcp
+  template:
+    metadata:
+      labels:
+        app: business-operations-mcp
+    spec:
+      containers:
+      - name: business-operations-mcp
+        image: gold-tier-ai-employee/business-operations-mcp:latest
+        ports:
+        - containerPort: 3002
+        env:
+        - name: MCP_SERVER_ID
+          value: "business-operations-mcp"
+        - name: MCP_SERVER_PORT
+          value: "3002"
+        envFrom:
+        - secretRef:
+            name: mcp-secrets
+        - configMapRef:
+            name: mcp-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: business-operations-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  selector:
+    app: business-operations-mcp
+  ports:
+  - protocol: TCP
+    port: 3002
+    targetPort: 3002
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: personal-assistance-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: personal-assistance-mcp
+  template:
+    metadata:
+      labels:
+        app: personal-assistance-mcp
+    spec:
+      containers:
+      - name: personal-assistance-mcp
+        image: gold-tier-ai-employee/personal-assistance-mcp:latest
+        ports:
+        - containerPort: 3003
+        env:
+        - name: MCP_SERVER_ID
+          value: "personal-assistance-mcp"
+        - name: MCP_SERVER_PORT
+          value: "3003"
+        envFrom:
+        - secretRef:
+            name: mcp-secrets
+        - configMapRef:
+            name: mcp-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: personal-assistance-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  selector:
+    app: personal-assistance-mcp
+  ports:
+  - protocol: TCP
+    port: 3003
+    targetPort: 3003
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: integration-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: integration-mcp
+  template:
+    metadata:
+      labels:
+        app: integration-mcp
+    spec:
+      containers:
+      - name: integration-mcp
+        image: gold-tier-ai-employee/integration-mcp:latest
+        ports:
+        - containerPort: 3004
+        env:
+        - name: MCP_SERVER_ID
+          value: "integration-mcp"
+        - name: MCP_SERVER_PORT
+          value: "3004"
+        - name: COMMUNICATION_MCP_URL
+          value: "http://communication-mcp:3001"
+        - name: BUSINESS_OPS_MCP_URL
+          value: "http://business-operations-mcp:3002"
+        - name: PERSONAL_ASSIST_MCP_URL
+          value: "http://personal-assistance-mcp:3003"
+        envFrom:
+        - secretRef:
+            name: mcp-secrets
+        - configMapRef:
+            name: mcp-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: integration-mcp
+  namespace: gold-tier-ai-employee
+spec:
+  selector:
+    app: integration-mcp
+  ports:
+  - protocol: TCP
+    port: 3004
+    targetPort: 3004
+  type: ClusterIP
