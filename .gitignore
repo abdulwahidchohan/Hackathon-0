@@ -1,0 +1,9 @@
+.env
+__pycache__/
+venv/
+.venv/
+*.log
+AI_Employee_Vault/Logs/
+AI_Employee_Vault/Pending_Approval/
+AI_Employee_Vault/Approved/
+AI_Employee_Vault/Needs_Action/

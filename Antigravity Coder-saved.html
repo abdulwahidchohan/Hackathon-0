@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity Coder | Digital FTE Solution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#0a0a0c',
+                            800: '#121216',
+                            700: '#1c1c24',
+                            600: '#2a2a35',
+                        },
+                        accent: {
+                            blue: '#3b82f6',
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            violet: '#8b5cf6',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0c;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(28, 28, 36, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .code-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .code-container::-webkit-scrollbar-track {
+            background: #121216;
+        }
+        .code-container::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        .glow-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 12px;
+            box-shadow: 0 0 10px currentColor;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-accent-blue/30 selection:text-accent-blue">
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-accent-blue/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent-violet/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 py-6 border-b border-white/5 bg-dark-900/80 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-tr from-accent-blue to-accent-violet rounded-xl flex items-center justify-center text-white shadow-lg shadow-accent-blue/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h1 class="font-display text-2xl font-extrabold tracking-tight">Antigravity <span class="gradient-text">Coder</span></h1>
+            </div>
+            <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+                <span class="px-3 py-1 rounded-full border border-white/10 bg-white/5 uppercase tracking-widest text-[10px]">v1.0.0 Stable</span>
+                <span class="flex items-center gap-2">
+                    <span class="glow-dot bg-accent-emerald text-accent-emerald animate-pulse"></span>
+                    System Active
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12 space-y-16">
+        
+        <!-- User Query Section -->
+        <section class="relative">
+            <div class="absolute -top-6 left-0 text-accent-blue/50 font-mono text-xs uppercase tracking-[0.2em] mb-4">Input Stream</div>
+            <div class="glass-card rounded-3xl p-8 transition-transform duration-500 hover:scale-[1.01]">
+                <h2 class="font-display text-xl font-semibold mb-6 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                    Original Prompt
+                </h2>
+                <div class="bg-dark-900/50 rounded-2xl p-6 border border-white/5 font-light leading-relaxed text-slate-300">
+                    Design a production-ready system for a "Digital FTE" (Full Time Employee) using Obsidian as a knowledge base and Claude Code for reasoning. The system must handle autonomous perception, reasoning loops, human approvals, and action execution via MCP servers.
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Solution Container -->
+        <section class="space-y-12">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <div class="text-accent-violet/50 font-mono text-xs uppercase tracking-[0.2em] mb-2">Output Generation</div>
+                    <h2 class="font-display text-4xl font-bold tracking-tight">Antigravity Solution</h2>
+                </div>
+                <div class="flex gap-2">
+                    <span class="px-4 py-2 rounded-lg glass-card text-xs font-semibold text-slate-300">Python 3.13+</span>
+                    <span class="px-4 py-2 rounded-lg glass-card text-xs font-semibold text-slate-300">Node.js v24+</span>
+                </div>
+            </div>
+
+            <!-- Bento Grid - Architectural Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-8 glass-card rounded-3xl p-8 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-8 text-accent-blue/10 group-hover:text-accent-blue/20 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-2xl font-bold mb-6 text-white">Architectural Summary</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 relative z-10">
+                        <div class="space-y-4">
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 shrink-0 rounded-lg bg-accent-blue/20 flex items-center justify-center text-accent-blue font-bold text-xs italic">01</div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-slate-100 mb-1">Perception Layer</h4>
+                                    <p class="text-sm text-slate-400">Python "Watchers" (Gmail, WhatsApp) monitor inputs and generate Markdown events.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 shrink-0 rounded-lg bg-accent-violet/20 flex items-center justify-center text-accent-violet font-bold text-xs italic">02</div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-slate-100 mb-1">Reasoning Engine</h4>
+                                    <p class="text-sm text-slate-400">Claude Code processes `/Needs_Action`, creates plans and human approval requests.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 shrink-0 rounded-lg bg-accent-cyan/20 flex items-center justify-center text-accent-cyan font-bold text-xs italic">03</div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-slate-100 mb-1">Action Layer</h4>
+                                    <p class="text-sm text-slate-400">MCP servers perform external operations (emails, payments) after human verification.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-8 h-8 shrink-0 rounded-lg bg-accent-emerald/20 flex items-center justify-center text-accent-emerald font-bold text-xs italic">04</div>
+                                <div>
+                                    <h4 class="font-semibold text-sm text-slate-100 mb-1">Orchestration</h4>
+                                    <p class="text-sm text-slate-400">Central loop managing task flow, logs, and process watchdog for 24/7 reliability.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-4 glass-card rounded-3xl p-8 flex flex-col justify-center items-center text-center space-y-4">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center text-white mb-2 shadow-xl shadow-accent-blue/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold">Privacy First</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Local-first architecture. Knowledge stays in your Obsidian vault. Transparent audit logs for every autonomous action.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Code Components Section -->
+            <div class="space-y-8">
+                <div class="flex items-center gap-4">
+                    <h3 class="font-display text-2xl font-bold">Core Implementation</h3>
+                    <div class="h-px flex-1 bg-white/5"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Orchestrator Code -->
+                    <div class="glass-card rounded-3xl overflow-hidden border border-white/10 group">
+                        <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div class="flex gap-1.5">
+                                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-amber-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-emerald-500/50"></div>
+                                </div>
+                                <span class="text-xs font-mono text-slate-400 ml-4">scripts/orchestrator.py</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-accent-blue bg-accent-blue/10 px-2 py-0.5 rounded uppercase tracking-wider">Production Logic</span>
+                        </div>
+                        <div class="code-container p-6 overflow-x-auto bg-dark-800">
+<pre class="font-mono text-sm leading-relaxed"><code class="text-slate-300"><span class="text-accent-violet">import</span> os
+<span class="text-accent-violet">import</span> shutil
+<span class="text-accent-violet">import</span> json
+<span class="text-accent-violet">from</span> datetime <span class="text-accent-violet">import</span> datetime
+
+<span class="text-slate-500"># Configuration</span>
+VAULT_PATH = os.getenv(<span class="text-accent-emerald">"VAULT_PATH"</span>, <span class="text-accent-emerald">"."</span>)
+DRY_RUN = os.getenv(<span class="text-accent-emerald">"DRY_RUN"</span>, <span class="text-accent-emerald">"true"</span>).lower() == <span class="text-accent-emerald">"true"</span>
+
+<span class="text-accent-violet">def</span> <span class="text-accent-blue">process_approved_file</span>(file_path):
+    <span class="text-accent-emerald">"""Processes human-approved actions and triggers MCP calls"""</span>
+    metadata = parse_markdown_metadata(file_path)
+    action_type = metadata.get(<span class="text-accent-emerald">"action"</span>)
+    
+    <span class="text-accent-violet">try</span>:
+        <span class="text-accent-violet">if</span> action_type == <span class="text-accent-emerald">"send_email"</span>:
+            result = mock_send_email(metadata)
+        <span class="text-accent-violet">elif</span> action_type == <span class="text-accent-emerald">"payment"</span>:
+            result = mock_make_payment(metadata)
+        
+        <span class="text-slate-500"># Move to completion folder</span>
+        move_to_done(file_path, success=<span class="text-accent-cyan">True</span>)
+        log_action(action_type, <span class="text-accent-emerald">"SUCCESS"</span>, metadata)
+        
+    <span class="text-accent-violet">except</span> Exception <span class="text-accent-violet">as</span> e:
+        log_action(action_type, <span class="text-accent-emerald">"FAILED"</span>, {<span class="text-accent-emerald">"error"</span>: str(e)})
+        move_to_rejected(file_path)</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Watchdog Code -->
+                    <div class="glass-card rounded-3xl overflow-hidden border border-white/10 group">
+                        <div class="px-6 py-4 bg-white/5 border-b border-white/5 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div class="flex gap-1.5">
+                                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-amber-500/50"></div>
+                                    <div class="w-3 h-3 rounded-full bg-emerald-500/50"></div>
+                                </div>
+                                <span class="text-xs font-mono text-slate-400 ml-4">scripts/watchdog.py</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-accent-cyan bg-accent-cyan/10 px-2 py-0.5 rounded uppercase tracking-wider">Uptime Monitor</span>
+                        </div>
+                        <div class="code-container p-6 overflow-x-auto bg-dark-800">
+<pre class="font-mono text-sm leading-relaxed"><code class="text-slate-300"><span class="text-accent-violet">def</span> <span class="text-accent-blue">check_and_restart</span>():
+    <span class="text-accent-violet">for</span> name, args <span class="text-accent-violet">in</span> PROCESSES_TO_MONITOR.items():
+        <span class="text-accent-violet">if not</span> is_process_running(name):
+            print(<span class="text-accent-emerald">f"CRITICAL: {name} down. Restarting..."</span>)
+            log_path = os.path.join(LOGS_PATH, <span class="text-accent-emerald">f"{name}_stdout.log"</span>)
+            
+            <span class="text-accent-violet">with</span> open(log_path, <span class="text-accent-emerald">"a"</span>) <span class="text-accent-violet">as</span> f:
+                p = subprocess.Popen(
+                    args, 
+                    stdout=f, 
+                    stderr=subprocess.STDOUT,
+                    preexec_fn=os.setsid <span class="text-slate-500"># Unix process isolation</span>
+                )
+                save_pid(name, p.pid)</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration & Setup Steps -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Dependencies & Instructions -->
+                <div class="glass-card rounded-3xl p-8 border-l-4 border-accent-blue">
+                    <h3 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        System Prerequisites
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-accent-blue/30 transition-colors">
+                            <span class="font-mono text-sm">Python 3.13+</span>
+                            <span class="text-xs text-slate-500">Core Runtime</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-accent-blue/30 transition-colors">
+                            <span class="font-mono text-sm">Node.js v24+</span>
+                            <span class="text-xs text-slate-500">MCP Bridge</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-accent-blue/30 transition-colors">
+                            <span class="font-mono text-sm">Claude Code CLI</span>
+                            <span class="text-xs text-slate-500">Reasoning</span>
+                        </div>
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-accent-blue/30 transition-colors">
+                            <span class="font-mono text-sm">Obsidian v1.10+</span>
+                            <span class="text-xs text-slate-500">Knowledge Base</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vault Structure -->
+                <div class="glass-card rounded-3xl p-8 border-l-4 border-accent-violet">
+                    <h3 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                        Vault Hierarchy
+                    </h3>
+                    <div class="font-mono text-xs text-slate-400 bg-dark-900/50 p-6 rounded-2xl border border-white/5 overflow-hidden">
+                        <div class="text-slate-100 mb-1">AI_Employee_Vault/</div>
+                        <div class="pl-4 border-l border-white/10">
+                            <div>├── Needs_Action/ <span class="text-[10px] text-accent-blue opacity-70 ml-2">// Inbox</span></div>
+                            <div>├── Pending_Approval/ <span class="text-[10px] text-accent-violet opacity-70 ml-2">// Human Check</span></div>
+                            <div>├── Approved/ <span class="text-[10px] text-accent-emerald opacity-70 ml-2">// Trigger</span></div>
+                            <div>├── Logs/ <span class="text-[10px] text-slate-600 ml-2">// Audit</span></div>
+                            <div>└── scripts/</div>
+                            <div class="pl-4">
+                                <div class="opacity-60">├── orchestrator.py</div>
+                                <div class="opacity-60">└── watchdog.py</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setup Instructions -->
+            <div class="glass-card rounded-3xl p-10 relative">
+                <div class="absolute top-0 right-0 h-full w-1 bg-gradient-to-b from-accent-blue via-accent-violet to-accent-emerald"></div>
+                <h3 class="font-display text-2xl font-bold mb-8">Deployment Workflow</h3>
+                <div class="space-y-8">
+                    <div class="flex gap-6 group">
+                        <div class="w-12 h-12 shrink-0 rounded-2xl bg-dark-900 border border-white/10 flex items-center justify-center text-accent-blue font-bold group-hover:scale-110 transition-transform">1</div>
+                        <div class="pt-1">
+                            <h4 class="font-bold text-lg mb-2">Initialize Environment</h4>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Create a <code class="bg-white/5 px-2 py-0.5 rounded">.env</code> file based on <code class="bg-white/5 px-2 py-0.5 rounded">.env.example</code>. Configure your Gmail API credentials, Obsidian Vault path, and set <code class="text-accent-emerald">DRY_RUN=true</code> for initial testing.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 group">
+                        <div class="w-12 h-12 shrink-0 rounded-2xl bg-dark-900 border border-white/10 flex items-center justify-center text-accent-violet font-bold group-hover:scale-110 transition-transform">2</div>
+                        <div class="pt-1">
+                            <h4 class="font-bold text-lg mb-2">Configure MCP Servers</h4>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Link your external capabilities in <code class="bg-white/5 px-2 py-0.5 rounded">mcp.json</code>. Ensure paths to your email, browser, and banking MCP scripts are absolute and point to verified implementations.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 group">
+                        <div class="w-12 h-12 shrink-0 rounded-2xl bg-dark-900 border border-white/10 flex items-center justify-center text-accent-emerald font-bold group-hover:scale-110 transition-transform">3</div>
+                        <div class="pt-1">
+                            <h4 class="font-bold text-lg mb-2">Execute Watchdog</h4>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Run <code class="bg-accent-blue/10 text-accent-blue px-3 py-1 rounded-lg font-mono text-sm">python scripts/watchdog.py</code>. This command initiates the perpetual reasoning loop and starts monitoring for incoming perception events.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Dashboard Preview (Miniature representation) -->
+        <section class="glass-card rounded-3xl p-8 bg-gradient-to-br from-dark-700/50 to-dark-800/50">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="font-display text-xl font-bold tracking-tight">System Health</h3>
+                <div class="flex gap-2">
+                    <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-slate-500">Live Telemetry</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="p-4 rounded-2xl bg-dark-900/50 border border-white/5">
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Queue Size</div>
+                    <div class="text-2xl font-display font-bold text-accent-blue">04</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-dark-900/50 border border-white/5">
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Processed</div>
+                    <div class="text-2xl font-display font-bold text-accent-emerald">128</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-dark-900/50 border border-white/5">
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Success Rate</div>
+                    <div class="text-2xl font-display font-bold text-accent-cyan">99.2%</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-dark-900/50 border border-white/5">
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Uptime</div>
+                    <div class="text-2xl font-display font-bold text-accent-violet">14d</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="h-24"></div> <!-- Spacer -->
+
+    <script>
+        // Subtle scroll animation for cards
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(20px)";
+            card.style.transition = "all 0.8s cubic-bezier(0.22, 1, 0.36, 1)";
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
